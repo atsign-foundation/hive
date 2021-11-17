@@ -14,6 +14,7 @@ class BinaryReaderImpl extends BinaryReader {
   final ByteData _byteData;
   final int _bufferLength;
   final TypeRegistryImpl _typeRegistry;
+  Frame? _lastReadFrame;
 
   int _bufferLimit;
   int _offset = 0;
@@ -246,10 +247,14 @@ class BinaryReaderImpl extends BinaryReader {
     if (availableBytes < 4) return null;
 
     var frameLength = readUint32();
-//    if (frameLength < 8) {
-//      throw HiveError(
-//          'This should not happen. Please open an issue on GitHub.');
-//    }
+    if (frameLength < 8) {
+      print('last read frame key: ${_lastReadFrame?.key}');
+      print('last read frame value: ${_lastReadFrame?.value}');
+      print('last read frame len: ${_lastReadFrame?.length}');
+      print('last read frame isLazy: ${_lastReadFrame?.lazy}');
+      throw HiveError(
+          'This should not happen. Please open an issue on GitHub.');
+    }
     if (availableBytes < frameLength - 4) return null;
 
     var crc = _buffer.readUint32(_offset + frameLength - 8);
@@ -283,7 +288,7 @@ class BinaryReaderImpl extends BinaryReader {
     skip(availableBytes);
     _resetLimit();
     skip(4); // Skip CRC
-
+    _lastReadFrame = frame;
     return frame;
   }
 

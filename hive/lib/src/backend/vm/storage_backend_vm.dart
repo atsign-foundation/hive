@@ -126,7 +126,11 @@ class StorageBackendVm extends StorageBackend {
       for (var frame in frames) {
         frame.length = writer.writeFrame(frame, cipher: _cipher);
         if (frame.length != null && frame.length! < 8) {
-          print('*** frame length less than 8 ${frame.key}');
+          print('*** frame length less than 8');
+          print('***frame key : ${frame.key}');
+          print('***frame value : ${frame.value}');
+          print('***frame isLazy : ${frame.lazy}');
+          print('***frame deleted : ${frame.deleted}');
         }
       }
 
